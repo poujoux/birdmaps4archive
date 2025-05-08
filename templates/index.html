@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import JS Example</title>
+</head>
+<body>
+
+    <!-- Searchs for the items -->
+
+
+    <form id="texts" action="/" name="textsf" method="POST">
+
+        <!--        <label for="searchf">Search for it</label> 
+        <input type="checkbox" id="radiox" name="radioxi" /> -->
+
+        <input list="datalistbox" id="text3" name="text3i">
+        <datalist id="datalistbox"></datalist>
+
+
+
+
+        <button type="submit">Showw</button>
+        <br/>
+
+
+    <!-- Displays if it exists-->
+
+
+    <div class="n" id="divv" style="display: none;">
+        <img id="imgll" height=180 width=60/>
+        <br/><span id="imglltext">name</span>
+        <br/><br/>
+        <img id="imglmap" height=60 width=45/>
+        <span id="imgllroad">road</span>
+        <a id="addtxtb" style="display: none;">birdname</a>
+        <a id="dltitem">DELETE</a>
+    </div>
+
+
+
+    </form>
+
+
+    <!-- Choose the template of a map or create it by typing cities -->
+
+    <form id="cityf" action="/" name="cityff" style="display: none;" method="POST">
+        <label for="selectf">Select an area or type it</label>
+        </br>
+        <select id="selectf" name="selectff" onchange="areasel(this.value)">
+            <option value="">Select a regionn</option>
+            <option value="Europe">Europe</option>
+            <option value="Asia">Asia</option>
+        </select>
+
+        <div id="Europe" style="display: none;" button="a">
+            <select id="selectfe" name="selectffe" onchange="areasel(this.value)">
+                <option value="Southwestern">Southwestern</option>
+                <option value="Northeastern">Northeastern</option>
+            </select>
+        </div>
+
+        <div id="Asia" style="display: none;" button="a">    
+            <select id="selectfa" name="selectffa" onchange="areasel(this.value)">
+                <option value="Southwestern">Southwestern</option>
+                <option value="Northeastern">Northeastern</option>
+            </select>
+        </div>
+
+
+        </br>
+        </br>
+        <input type="text" id="textcityf" name="textcityff">
+        <button type="submit">D</button>
+        </br>
+        <span id="inftext" style="color: black;" ><i>City1, City2, City3</i></span>
+    </form>
+
+
+
+
+    <!-- Uploading the image and maps to the s3 bucket -->
+
+    
+    <form id="f" action="/files" name="ff" style="display: none;" method="POST" enctype="multipart/form-data">
+
+        <div id="imgupl" name="imgupld" style="display: none;" button="b">
+            <input type="file" id="filef" name="fileff">
+
+
+            <button type="submit">C</button>
+
+        </div>
+
+
+
+        <!-- Edit the map with choosing the cities -->
+
+        <div id="imgmap" name="imgmapd" style="display: none;" button="b">
+            <input type="text" id="textf2" list="datalistbox2" name="textt2" placeholder="Enter">
+            <datalist id="datalistbox2"></datalist>
+
+            <img id="imgl" height=400/>
+            <img id="imgleft" src="static/images/sun.png" onclick="moveit('left')" height=40/>
+            <img id="imgright" src="static/images/sun.png" onclick="moveit('right')" height=40/>
+            <img id="imgsel" src="static/images/sun.png" onclick="selcity(this)" height=40/> 
+            <img id="imgdel" src="static/images/sun.png" onclick="refrimg()" height=40/>
+        </div>
+
+
+        <img id="imgprv" src="static/images/sun.png" onclick="nextprev('prev')" height=20/> 
+        <img id="imgnext" src="static/images/sun.png" onclick="nextprev('next')" height=20/> 
+
+
+
+
+    </form>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+	
+</body>
+</html>

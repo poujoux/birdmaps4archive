@@ -21,21 +21,21 @@
 
 
 
-        <button type="submit">Showw</button>
+        <button type="submit">Show</button>
         <br/>
-
 
     <!-- Displays if it exists-->
 
 
+
     <div class="n" id="divv" style="display: none;">
-        <img id="imgll" height=180 width=60/>
-        <br/><span id="imglltext">name</span>
-        <br/><br/>
-        <img id="imglmap" height=60 width=45/>
-        <span id="imgllroad">road</span>
+        <br/>
+        <img id="imgll" height=100 width=80/>
+        <br/><label id="imglltext">name</label></br><br/>
+        <img id="imglmap" height=180 width=180/><br/>
+        <label id="imgllroad">road</label><br/><br/>
         <a id="addtxtb" style="display: none;">birdname</a>
-        <a id="dltitem">DELETE</a>
+        <a href="" id="dltitem">DELETE</a>
     </div>
 
 
@@ -67,7 +67,6 @@
                 <option value="Northeastern">Northeastern</option>
             </select>
         </div>
-
 
         </br>
         </br>
@@ -102,21 +101,41 @@
             <datalist id="datalistbox2"></datalist>
 
             <img id="imgl" height=400/>
-            <img id="imgleft" src="static/images/sun.png" onclick="moveit('left')" height=40/>
-            <img id="imgright" src="static/images/sun.png" onclick="moveit('right')" height=40/>
-            <img id="imgsel" src="static/images/sun.png" onclick="selcity(this)" height=40/> 
-            <img id="imgdel" src="static/images/sun.png" onclick="refrimg()" height=40/>
+            <img id="imgleft" src="static/images/imgleft.png" onclick="moveit('left')" height=32/>
+            <img id="imgright" src="static/images/imgright.png" onclick="moveit('right')" height=32/>
+            <img id="imgsel" src="static/images/imgsel.png" onclick="selcity(this)" height=32/> 
+            <img id="imgdel" src="static/images/imgdel.png" onclick="refrimg()" height=32/>
+            <div id="divposs" name="divpossd">
+            </div>
         </div>
 
-
-        <img id="imgprv" src="static/images/sun.png" onclick="nextprev('prev')" height=20/> 
-        <img id="imgnext" src="static/images/sun.png" onclick="nextprev('next')" height=20/> 
+         
+        <br/><br/>
+        <img id="imgprv" src="static/images/imgleft.png" onclick="nextprev('prev')" height=32/> 
+        <img id="imgnext" src="static/images/imgright.png" onclick="nextprev('next')" height=32/> 
 
 
 
 
     </form>
 
+
+
+    <!-----
+
+
+<a href="https://www.flaticon.com/free-icons/reload" title="reload icons">Reload icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/left-and-right-arrows" title="left and right arrows icons">Left and right arrows icons created by Md. Mukhlesur Rahaman - Flaticon</a>
+
+
+<a href="https://www.flaticon.com/free-icons/ui" title="ui icons">Ui icons created by Md. Mukhlesur Rahaman - Flaticon</a>
+
+
+<a href="https://www.flaticon.com/free-icons/select" title="select icons">Select icons created by Shashank Singh - Flaticon</a>
+
+
+    ---->
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 

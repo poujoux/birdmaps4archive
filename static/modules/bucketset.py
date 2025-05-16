@@ -9,7 +9,7 @@ class S3B:
 
     def __init__(self, bucketn, region):
 
-        self._bucketn = f"{bucketn}.{uuid.uuid4()}"
+        self._bucketn = bucketn
         self.region = region
         self.s3 = boto3.client('s3', region_name=self.region, aws_access_key_id=self.awskey, aws_secret_access_key=self.awsskey)
         
@@ -32,11 +32,10 @@ class S3B:
     def createbucket(self):
         try:
             self.s3.create_bucket(
-                    Bucket=self._bucketn,
+                    Bucket=f"{self._bucketn}",
                     CreateBucketConfiguration={'LocationConstraint': self.region})
             print("It has been created, bucket")
 
-            
             print("It has been granted, bucket")
 
 
@@ -47,7 +46,8 @@ class S3B:
         list = self.s3.list_buckets()
 
         if not list.get("Buckets"):
-            print("Error")
+            print("Error, creating the bucket")
+
             return None;
 
         if type == "buckets":
@@ -96,49 +96,95 @@ class S3B:
         for i in os.listdir(mainp):
             mainp1 = os.path.join(name, i)
             print(mainp1)
-            self.s3.put_object_acl(ACL="public-read", Bucket=self._bucketn, Key=mainp1)
+
+            self.s3.upload_file(os.path.join(mainp, i), self._bucketn,mainp1, ExtraArgs={"ContentType": "image/jpeg"})
+            #self.s3.put_object_acl(ACL="public-read", Bucket=self._bucketn, Key=mainp1)
 
 
     def linkgen(self, name):
 
         print("It has been granted, bucket")
 
-        return f"https://{self._bucketn}.s3.amazonaws.com/{name}"
+        main = f"https://s3.{self.region}.amazonaws.com/{self._bucketn}/{name}"
 
+        imgpath = os.path.join(main, f"{name}.jpg")
+        mappath = os.path.join(main, "n8.jpg")
+
+        return imgpath, mappath
 
 
     def getloc(self):
         return self.s3.get_bucket_location(Bucket=self._bucketn)['LocationConstraint']
 
+    def grantaccess(self):
+
+        self.s3.put_public_access_block(
+            Bucket=self._bucketn,
+            PublicAccessBlockConfiguration={
+                'BlockPublicAcls': False,
+                'IgnorePublicAcls': False,
+                'BlockPublicPolicy': False,
+                'RestrictPublicBuckets': False
+            }
+        )
+
+        policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "Statement1",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": f"arn:aws:s3:::{self._bucketn}/*"
+                }
+            ]
+        }
+
+        self.s3.put_bucket_policy(
+            Bucket=self._bucketn,
+            Policy=json.dumps(policy)
+        )
+
+        print(8*"7")
 
 
 
-def bucketsearch(buckt):
 
-    if not buckt:
-        buckt = S3B(str(uuid.uuid4()), "eu-north-1") 
-        bucktlist = buckt.getlist().get("Buckets", None)
 
-        if bucktlist:
-            buckt.bucketn = bucktlist[-1]["Name"]
-            print("Name of the bucket: ", buckt.bucketn)
+def bucketsearch():
+    
+    buckt = S3B(f"{str(uuid.uuid4())}", "eu-north-1") 
+    print("Bucket: ", buckt)
 
-        else:
-            buckt.createbucket()
+    bucktlist = buckt.getlist()
+
+    print("bucktlist: ", bucktlist)
+
+    if not bucktlist:
+        buckt.createbucket()
+        bucktlist = buckt.getlist()
+
+    buckt.bucketn = bucktlist.get("Buckets", None)[-1]["Name"]
+    print("Name of the bucket: ", buckt.bucketn)
+
+
+    buckt.grantaccess()
+    print("It has been granted")
+
 
     return buckt
 
 
 def addandlink(buckt, name):
+    print(buckt.bucketn)
+    buckt.grantaccess()
 
     buckt.additems(name)
-    '''
 
-    imglink = buckt.objj(
-    n8link = buckt.objj
-    '''
+    imgpath, mappath = buckt.linkgen(name)
 
-    return imglink, n8link
+    print("Success")
 
-
+    return imgpath, mappath
 

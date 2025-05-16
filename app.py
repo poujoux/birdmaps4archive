@@ -50,7 +50,11 @@ gr=None
 rgr=None;
 dbpaths=None
 
-buckt=None;
+buckt="wtf"
+
+#intstat=True
+intstat=False
+
 
 
 
@@ -65,8 +69,13 @@ def a():
     global dbpaths
     global buckt
     global rgr
+    global intstat
+
+
 
     databname, tablename = "mdbb.db", "mytable"
+
+    #intstat=True
         
     if not dbpaths:
         dbpaths = dbset.DbSet(databname, tablename)
@@ -74,8 +83,17 @@ def a():
     if not rgr:
         rgr = nx.DiGraph()
 
+    if not request.headers.get("Referer") and not intstat:
+        try:
+            print(9*"Some bucket stuff")
+            buckt = bucketset.bucketsearch()
+            intstat = True 
+        except Exception as e:
+            print(f"{e}")
+            print(99*"-")
 
-    buckt = bucketset.bucketsearch(buckt)
+    
+        print(9*str(intstat))
 
 
     if request.method == "POST" and cityljson and cityljson.get("citylist"):
@@ -156,6 +174,7 @@ def img():
 
 
     print(24*"-", "ENTERING TO THE MAIN", 24*"-", end="\n")
+    print("session", session)
 
 
 
@@ -173,6 +192,12 @@ def img():
         if os.path.exists(os.path.join(imgpath, "n7.jpg")):
             os.remove(os.path.join(imgpath, "n7.jpg"))
             print("It has been deleted")
+                
+
+        if list(rgr.edges):
+            rgr.remove_edges_from(list(rgr.edges))
+            print("The edge has been deleted")
+
 
         return jsonify({"Status": "True"}),200
 
@@ -213,7 +238,10 @@ def img():
                     node0 = ckies.get("pos1")
                     node1 = ckies.get("pos2")
 
+
                     nn = [(node0, node1)]
+
+                    print("nn: ", nn)
 
                     imgpath1 = os.path.join(imgpath, "n8.jpg")
 
@@ -278,7 +306,7 @@ def img():
 
 
         imgg.save(imgpath1)
-        os.chmod(imgpath1, 0o755)
+        os.chmod(imgpath1, 0o777)
 
 
         print(24*"-", "EXITTING FROM THE MAIN", 24*"-", end="\n")
@@ -316,7 +344,7 @@ def filess():
         os.makedirs(pathname)
 
 
-    edgelines = sum(list(rgr.edges), ())
+    edgelines = "-".join(sum(list(rgr.edges), ()))
     
 ####
 
@@ -326,23 +354,29 @@ def filess():
 
     os.chmod(pathname, 0o755)
 
-    try:
-        imglink, n8link = bucketset.addandlink(buckt, name)
-        rmtree(pathname)
+    if intstat and buckt:
+        print(9*"Trying to bucket it...")
+        try:
+            print(buckt.getlist())
+            print(buckt.bucketn)
+            pathnameimg, pathnamen8 = bucketset.addandlink(buckt, name)
+            print("Trying to bucket it...")
+            rmtree(pathname)
 
-    except Exception as e:
-        print(f"An error occured: {e}")
-        print("Trying to obtain it...")
+        except Exception as e:
+            print(f"An error occured: {e}")
+            print("Trying to obtain it...")
 
-        if os.path.exists(pathname):
-            imglink, n8link = os.listdir(pathname)
-            print("They are obtained")
+            if os.path.exists(pathname):
+                print("They are obtained")
 
-        else:
-            return jsonify({"Status": "F"}), 404
+            else:
+                return jsonify({"Status": "F"}), 404
+
+            print(name,pathnameimg,pathnamen8,edgelines)
 
     
-    dbpaths.addf(name, imglink, n8link, edgelines)
+    dbpaths.addf(name, pathnameimg, pathnamen8, edgelines)
 
 
     return jsonify({"Status": "S"}), 200
@@ -358,20 +392,41 @@ def dbb(itemname):
         print("nvalue: ", nvalue)
 
         if bool(nvalue): 
-            return jsonify({"Status": "True", "name": nvalue[0], "map": nvalue[2], "bird": nvalue[1], "roadway": nvalue[2]}), 200
+            return jsonify({"Status": "True", "name": nvalue[0], "map": nvalue[2], "bird": nvalue[1], "roadway": nvalue[-1], "intstat": intstat}), 200
 
 
         else:
-            return jsonify({"Status": "False"}), 400
+            return jsonify({"Status": "False", "intstat": intstat}), 400
+
 
     if request.method == "DELETE":
         try:
-            print("itemname: ", itemname)
+            if dbpaths.searchf(itemname):
 
-            dbpaths.delf(itemname)
-            print("The table has been deleted.")
+                print("itemname: ", itemname)
 
-            return jsonify({"Status": "True"}), 200
+                dbpaths.delf(itemname)
+                print("The table has been deleted.")
+                    
+                imgpath = os.path.join("static", "images")
+
+                if os.path.exists(os.path.join(imgpath, itemname)):
+                    rmtree(os.path.join(imgpath, itemname))
+                    print("The folder has been deleted")
+
+
+                if list(rgr.edges):
+                    rgr.remove_edges_from([list(rgr.edges)[-1]])
+                    print("The edge has been deleted")
+
+
+
+
+                return jsonify({"Status": "True"}), 200
+
+            print("9202920200202")
+
+            return jsonify({"status": "error"}), 400
 
         except Exception as e:
             return jsonify({"status": "error"}), 400

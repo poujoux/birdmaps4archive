@@ -16,6 +16,8 @@ const imgllmap = document.getElementById("imglmap");
 const imglltext  = document.getElementById("imglltext");
 const imgllroad = document.getElementById("imgllroad");
 
+const imgright = document.getElementById("imgright");
+
 ///////Not found? Add it
 const addtxtb = document.getElementById("addtxtb");
 
@@ -60,7 +62,12 @@ const imgmap = document.getElementById("imgmap");
 
 
 
-const radiox = document.getElementById("radiox");
+const textcityf = document.getElementById("textcityf");
+
+
+const divposs = document.getElementById("divposs");
+
+
 
 
 
@@ -76,12 +83,16 @@ let newsrcc="";
 window.onload = function(){
     refrimg();
     divv.style.display = "none";
+    textcityf.style.display = "block";
+    inftext.style.display = "block";
     
 };
 
+    
+const delfunct = function(event, item){ 
+    event.preventDefault();
 
-
-
+};
 
 
 
@@ -102,115 +113,125 @@ items.addEventListener("input", function(event){
     });
 
 });
+
+    const delitem = function(n){
+
+        fetch(`/db/${n}`, {
+        method: "DELETE",
+    })
+        .then(response => {
+            if(!response.ok){
+                return response.json().then(data => {
+                    throw new Error("fcydgg");
+                })
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            if(data.status === "True"){
+
+                const deltxt = document.createElement("a");
+                deltxt.href = "#";
+                deltxt.textContent = `Deleted: ${n}`;
+                document.body.appendChild(deltxt);
+
+                setTimeout(() => {
+                    deltxt.remove();
+                    window.location.reload();
+
+                }, 4000);
+
+                return;
+
+            }
+        }) 
+        .catch(error => {
+            //alert("Error message: " + error.message);
+
+        });
+    return;}
+
+    const dltitem = document.getElementById("dltitem");
+
 formm.addEventListener("submit", function(event){
+
+
     event.preventDefault();
-    
+
     let n = items.value;
+
+    
+    dltitem.addEventListener("click", function(){delitem(n);});
 
     divv.style.display = "none";
 
 
-    if(listb.includes(n)){
-
-        ///////
-
-        if(true===false){
-            alert("22222");
-
-            fetch(`/db/${n}`, {
-                method: "DELETE",
-            })
-                .then(response => {
-                    if(!response.ok){
-                        return response.json().then(data => {
-                            throw new Error("fcydgg");
-                        })
-                    }
-
-                        return response.json();
-                    })
-                .then(data => {
-                    if(data.status === "True"){
-
-                        const deltxt = document.createElement("a");
-                        deltxt.href = "#";
-                        deltxt.textContent = `Deleted: ${n}`;
-                        document.body.appendChild(deltxt);
-
-                        setTimeout(() => {
-                            deltxt.remove();
-                            window.location.reload();
-
-                        }, 4000);
-                        
-                        window.location.reload();
-                        return;
-
-                    }
-                }) 
-                .natch(error => {
-                    //alert("Error message: " + error.message);
-                    
-                });
-            return;
-        }
-
-        fetch(`/db/${n}`, {
-            method: "POST",
-        })
-            .then(response => {
-                if(!response.ok){
-                    return response.json().then(data => {
-                        throw new Error("fcydgg");
-                    })
-                }
-
-                    return response.json();
+    fetch(`/db/${n}`, {
+        method: "POST",
+    })
+        .then(response => {
+            if(!response.ok){
+                return response.json().then(data => {
+                    const error = new Error("fcydgg");
+                    error.data = data;
+                    throw error;
                 })
-            .then(data => {
-                if(data.Status === "True"){
-                    alert("829292902");
-                    
-                    divv.style.display = "block";
+            }
 
-                    imgll.src = data.bird;
-                    imglltext.innerText = data.name;
-                    imgllmap.src = data.map;
-                    imgllroad.innerText = data.roadway;
+            return response.json();
+        })
+        .then(data => {
+            if(data.Status === "True"){
 
+                divv.style.display = "block";
+
+                imgll.src = data.bird;
+                imglltext.textContent = data.name;
+                imgllmap.src = data.map;
+                imgllroad.textContent = data.roadway;
+
+                addtxtb.style.display = "none";
+
+                ////////
+            }
+        }) 
+        .catch(error => {
+            //alert("Error message: " + error.message);
+            addtxtb.innerText = `Not found? Add it: ${n}`;
+            addtxtb.style.display = "block";
+            document.body.appendChild(addtxtb);
+            //alert(error.data.intstat);
+
+
+            addtxtb.onclick = function(){
+                //for some reason it didnt work with the variable error as a function parameter but also there are some issues when i try to assign the error to another variable and pass it as a param to the function   
+
+
+                if(error.data.intstat === false){
+
+                    textcityf.style.display = "none";
+                    inftext.style.display = "none";
                 }
-            }) 
-            .catch(error => {
-                //alert("Error message: " + error.message);
-                addtxtb.innerText = `Not found? Add it: ${n}`;
-                addtxtb.style.display = "block";
-                document.body.appendChild(addtxtb);
+                else{
+                    textcityf.style.display = "block";
+                    inftext.style.display = "block";
+                }
 
-                addtxtb.onclick = function(){
-                    addtxtb.style.display = "none";
+                addtxtb.style.display = "none";
 
-                    document.body.removeChild(addtxtb);
+                document.body.removeChild(addtxtb);
 
-                    formm.style.display = "none";
-                    cityf.style.display = "block";
-                };
+                formm.style.display = "none";
+                cityf.style.display = "block";
 
+            };
+        });
 
 
 
-
-
-            });
-
-
-
-    }
 
 }); 
-
-
-
-        
 
 
 
@@ -230,12 +251,8 @@ async function itemt(textt, listbox) {
    
     if (flist.length !== 1) {
         
-               
-
-        
         if (typeof newsr === "undefined") {
             try {
-                
                 const response = await fetch("/img", { method: "HEAD" });
                 if (!response.ok) {
                     //it already covers 400-500 as well but without throwing an error if you dont add these lines
@@ -258,7 +275,6 @@ async function itemt(textt, listbox) {
         }
 
         ifcityselflag = "";  //no need to send the same fetch img request again
-
  
     }
     
@@ -291,43 +307,15 @@ textt2.addEventListener("input", function() {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 let rstext;
 
-// it doesnt work without domcontentloaded somehow
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("textf2");
     const imgl = document.getElementById("imgl");
 
     input.addEventListener("change", async function (event) {
     const textt2v = event.target.value;
-            //alert("92929299229929");
+
         //alert(event.target.value);
         const lstx = textt2v.includes(",") && textt2v.split(",").length > 1 ? textt2v.split(", ") : null;
 
@@ -370,11 +358,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+let ffflag = false;
 
 ff.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    alert("9292929929");
     
     
     const frm = new FormData(event.target);
@@ -387,27 +375,38 @@ ff.addEventListener("submit", async function(event) {
     frm.append("textt", items.value);
 
 
-    alert("Cookues: " + document.cookie);
+    //alert("Cookues: " + document.cookie);
 
 
     const succstxt = document.createElement("a");
     succstxt.href = "#";
-    succstxt.textContent = "a";
+    succstxt.textContent = "It is not being downloaded";
+
+    n = document.createElement("a");
+    n.href = "#";
+    n.innerText = "Waiting....";
+        
+    document.body.appendChild(n);
 
 
-    if(rstext || document.cookie.split("; ").length > 1){
-        alert("11111");
+
+    //alert(document.cookie.split("; ").length);
+    //alert(document.cookie.split("; "));
+
+
+
+
+    if(rstext || document.cookie.split("; ").length){
 
         try{
-            alert("22222");
             const response = await fetch(event.target.action, {
                 method: "POST",
                 body: frm
             });
 
-
             const data = await response.json();
-            alert(data);
+
+            n.remove();
 
             if(data.Status !== "S"){
                 alert("829292992929");
@@ -415,10 +414,10 @@ ff.addEventListener("submit", async function(event) {
             }   
             else{
                 alert("Successfull");
-                listb.push(texttv)
+                listb.push(textt)
             }
 
-            succstxt.textContent = "b";
+            succstxt.textContent = "Successfull";
         }
 
         catch(error){
@@ -436,7 +435,6 @@ ff.addEventListener("submit", async function(event) {
         }, 4000);
 
 
-
 });
 
 
@@ -450,13 +448,7 @@ const rareaselmnt = document.getElementById("selectf").options;
 let rareas = ["Europe", "Asia"];
 
 //const areas = document.querySelectorAll("div[button='a'] > select > option");
-/*
-let areas = Array.from(ee).reduce((acc, option) => {
-    if (!acc.includes(option.value)) {
-        acc.push(option.value);
-    }
-    return acc;
-}, []);*/
+
 
 let areas = ["Southwestern", "Northeastern"];
 //It includes all the options that are listed in the regions below
@@ -464,8 +456,6 @@ let areas = ["Southwestern", "Northeastern"];
 //rareas.forEach(v => alert(v));
 
     
-
-
 
 
 let indx = -1;
@@ -497,7 +487,6 @@ function areasel(optid){
 
         }
         
-
         else{
             Array.from(n).forEach(n => {
                 if(n.style.display == "block"){
@@ -514,6 +503,9 @@ function areasel(optid){
             else{
                 optidval = "";
                 indx = 0;
+
+                textcityf.style.display = "block";
+                inftext.style.display = "block";
             }
         }
     }
@@ -521,6 +513,10 @@ function areasel(optid){
     else if(!isitopen){
         if(optid && rareas.includes(optid)){
             document.getElementById(optid).style.display = "block";
+
+            textcityf.style.display = "none";
+            inftext.style.display = "none";
+
 
             optidval = areas[0];
             indx = rareas.indexOf(optid);
@@ -548,7 +544,7 @@ cityf.addEventListener("submit", function(event){
 
 
     if(!txtsn){
-        alert("92929292992929222929");
+        alert("Enter a valid text");
         return;
     }
     
@@ -574,9 +570,10 @@ cityf.addEventListener("submit", function(event){
         imgl.innerHTML = "";
         imgl.src = "";
 
+        
 
         imgl.src = data.filepath[0];
-        alert(imgl.src);
+        //alert(imgl.src);
         newsrcc = data.filepath[0];
 
         ff.style.display = "block";
@@ -598,20 +595,13 @@ cityf.addEventListener("submit", function(event){
 
 });
     
-////////////////////////////////////////////////////////////
-
-let nnn = function(){
-    cityf.style.display = "block";
-
-}
-
-
-
 
 
 let url;
 
+const imgupl = document.getElementById("imgprv");
 
+//this is for displaying the bird image you upload 
 inpf.addEventListener("change", function(event){
     const file = event.target.files[0];
 
@@ -625,13 +615,15 @@ inpf.addEventListener("change", function(event){
     const img = document.createElement("img");
     img.src = url; 
     img.width = 40;
-    document.body.appendChild(img);
+
+    brc = document.createElement("br");
+
+    ff.insertBefore(img, imgprv.previousSibling);
+    ff.insertBefore(brc, img.nextElementSibling);
 
     
-    setTimeout(() => img.remove(), 4000);
+    setTimeout(() => {img.remove(); brc.remove();}, 4000);
 });
-
-
 
 
 
@@ -656,10 +648,15 @@ const cookieclnr = async function(){
         
 
         imgg.style.display = "block";
+        if(imgg.nextElementSibling.tagName === "BR"){
+        imgmap.removeChild(imgg.nextElementSibling);
+        }
         //
+        //no need to use spans for informing
             
-        const spans = document.querySelectorAll("div > span");
-        spans.forEach(el => el.remove());
+        const brs = document.querySelectorAll("div#divposs");
+        //const brs = document.querySelectorAll("div#divposs > span");
+        brs.forEach(el => el.remove());
         return;
 };
 
@@ -711,10 +708,6 @@ async function cookiedel(old){
 }
 
 
-
-
-
-
 let selcity = async function(img) {
         
     let u = [];
@@ -729,7 +722,12 @@ let selcity = async function(img) {
         u = ["pos1", "first"];
     } else if (docl.length === 1) {
         u = ["pos2", "second"];
-        img.style.display = "none";
+
+        const brc = document.createElement("br");
+        imgg.style.display = "none";
+        
+        imgmap.insertBefore(brc, imgg.nextElementSibling);
+
     }
 
     let newcookie = u[0] + "=" + list[pos] + "; path=/;";
@@ -737,9 +735,13 @@ let selcity = async function(img) {
 
     //alert("the new cookie: " + newcookie);
 
-    let possp = document.createElement("span");
-    possp.innerText = `The ${u[1]} is selected as: ${list[pos]}`;
-    imgmap.appendChild(possp);
+
+    //const possp = document.createElement("span");
+    const br = document.createElement("br");
+    //possp.innerText = `The ${u[1]} is selected as: ${list[pos]}`;
+
+    //divposs.appendChild(possp);
+    divposs.appendChild(br);
 
     //pos = -1;
 
@@ -758,12 +760,12 @@ let selcity = async function(img) {
             //alert("Data: " + data.data);
 
             let newSrc = data.data + "?timestamp=" + Date.now();
-        imgl.innerHTML = "";
-        imgl.src = "";
+            imgl.innerHTML = "";
+            imgl.src = "";
             imgl.src = newSrc;
 
 
-            
+
         }
         catch(error){
             alert(error.message || "Unknown error");
@@ -798,26 +800,31 @@ let refrimg = function(){
     pos = 999999;
 };
     
-
+//cityf imgupl imgmap divposs
 
 const qlist = document.querySelectorAll("form#cityf, [button='b']");
 let indxls = 2;
  
-
+    
 let nextprev = function(name){
+
     qlist[indxls].style.display = "none";
     indxls = (indxls + (name === "next" ? 2: -2) + qlist.length) % qlist.length;
     qlist[indxls].style.display = "block";
 
     if(indxls === 1){
         imgg.style.display = "block";
-        //
-            
-        const spans = document.querySelectorAll("span");
-        spans.forEach(el => el.remove());
+        
+        document.cookie = "stat=y; path=/;";
+        pos = 999999;
+
         return;
 
     }
+    else{
+        document.cookie =  "stat=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    }
+
 
 };
 

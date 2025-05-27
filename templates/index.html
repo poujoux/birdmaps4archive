@@ -99,12 +99,14 @@
         <div id="imgmap" name="imgmapd" style="display: none;" button="b">
             <input type="text" id="textf2" list="datalistbox2" name="textt2" placeholder="Enter">
             <datalist id="datalistbox2"></datalist>
-
             <img id="imgl" height=400/>
-            <img id="imgleft" src="static/images/imgleft.png" onclick="moveit('left')" height=32/>
-            <img id="imgright" src="static/images/imgright.png" onclick="moveit('right')" height=32/>
-            <img id="imgsel" src="static/images/imgsel.png" onclick="selcity(this)" height=32/> 
-            <img id="imgdel" src="static/images/imgdel.png" onclick="refrimg()" height=32/>
+            <div id="imgmapbuttonset"> 
+                <img id="imgleft" src="static/images/imgleft.png" onclick="moveit('left')" height=32/>
+                <img id="imgright" src="static/images/imgright.png" onclick="moveit('right')" height=32/>
+                <img id="imgsel" src="static/images/imgsel.png" onclick="selcity(this)" height=32/> 
+                <img id="imgdel" src="static/images/imgdel.png" onclick="refrimg()" height=32/>
+            </div>
+            <img id="imgsetc" src="static/images/imgdel.png" onclick="imgsetchange()" height=32/>
             <div id="divposs" name="divpossd">
             </div>
         </div>

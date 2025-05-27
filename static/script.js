@@ -35,7 +35,7 @@ const textt2 = document.getElementById("textf2");
 const listbox2 = document.getElementById("datalistbox2");
 
 /// the image that will be displayed
-const imgl = document.getElementById("imgl");
+const imgdl = document.getElementById("imgl");
 
 const imgg = document.getElementById("imgsel");
 ////////////////////
@@ -70,18 +70,19 @@ const divposs = document.getElementById("divposs");
 
 
 
+const imgmapbuttonset = document.getElementById("imgmapbuttonset"); 
 
 let list = [];
 let listb = ["Eagle", "Hawk", "Hi"];
 
 let ifcityselflag;
-let newsr;
 
 let newsrcc="";
+//cityf -> textt2.addEvent(input) -> textt2 change
 
 
 window.onload = function(){
-    refrimg();
+    refrimg(delmain=true);
     divv.style.display = "none";
     textcityf.style.display = "block";
     inftext.style.display = "block";
@@ -234,6 +235,7 @@ formm.addEventListener("submit", function(event){
 }); 
 
 
+//this function is charged of changing colour of the cities depending on the input (n7.jpg)
 
 async function itemt(textt, listbox) {
     let text = textt.value.toLowerCase().trim();
@@ -250,8 +252,9 @@ async function itemt(textt, listbox) {
 
    
     if (flist.length !== 1) {
+        alert("82929291991");
         
-        if (typeof newsr === "undefined") {
+        if (newsrcc && !(newsrcc.endsWith("n8.jpg"))) {
             try {
                 const response = await fetch("/img", { method: "HEAD" });
                 if (!response.ok) {
@@ -260,11 +263,11 @@ async function itemt(textt, listbox) {
                     
                 }
 
-                newsr = "static/images/n8.jpg";
-                imgl.innerHTML = "";
-                imgl.src="";
-                imgl.src = newsr;
-                newsrcc = newsr
+                newsrcc = "static/images/n8.jpg";
+                imgdl.innerHTML = "";
+                imgdl.src="";
+                imgdl.src = newsrcc;
+                alert("not equal" + newsrcc.toString());
                                 
             } catch (error) {
                 //alert("Image does not exist:" +  error.message);
@@ -274,8 +277,8 @@ async function itemt(textt, listbox) {
 
         }
 
-        ifcityselflag = "";  //no need to send the same fetch img request again
- 
+        ifcityselflag = ""; //The match is done but if its matched with the same city again 
+
     }
     
     else if (flist.length === 1) {
@@ -286,10 +289,13 @@ async function itemt(textt, listbox) {
                 .then(response => response.json())
                 .then(data => {
                     let newSrc = data.data + "?timestamp=" + Date.now();
-                    imgl.innerHTML = "";
-                    imgl.src = newSrc; 
+                    //newSrc = static/images/n7.jpg;
+                    imgdl.innerHTML = "";
+                    imgdl.src = newSrc; 
+                    alert("equal 1" + newSrc.toString());
                 });
-            ifcityselflag = n; 
+            ifcityselflag = n;  //no need to send the same fetch img request again
+
         }
     }
 
@@ -311,8 +317,9 @@ let rstext;
 
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("textf2");
-    const imgl = document.getElementById("imgl");
+    const imgdl = document.getElementById("imgl");
 
+//this function is charged of creating lines between the cities depending on the input (n8.jpg)
     input.addEventListener("change", async function (event) {
     const textt2v = event.target.value;
 
@@ -326,7 +333,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             rstext = JSON.stringify({ urtext: rs });
-            //alert(rstext);
 
             try {
 
@@ -342,10 +348,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.data) {
                     //alert(data.data);
                     newsrcc = data.data;
+                    //n8.jpg
 
-                    imgl.src = "";
-                    imgl.innerHTML = "";
-                    imgl.src = data.data + "?timestamp=" + Date.now();
+                    imgdl.src = "";
+                    imgdl.innerHTML = "";
+                    imgdl.src = data.data + "?timestamp=" + Date.now();
                 }
 
             } catch (error) {
@@ -367,8 +374,8 @@ ff.addEventListener("submit", async function(event) {
     
     const frm = new FormData(event.target);
 
-    imgl.src = "";
-    imgl.innerHTML = "";
+    imgdl.src = "";
+    imgdl.innerHTML = "";
 
 
     //const texttv = frm.get("textt"); 
@@ -547,6 +554,8 @@ cityf.addEventListener("submit", function(event){
         alert("Enter a valid text");
         return;
     }
+
+    alert(txtsn);
     
 
 
@@ -567,13 +576,11 @@ cityf.addEventListener("submit", function(event){
         return response.json();
     })
     .then(data => {
-        imgl.innerHTML = "";
-        imgl.src = "";
+        imgdl.innerHTML = "";
+        imgdl.src = "";
 
-        
-
-        imgl.src = data.filepath[0];
-        //alert(imgl.src);
+        imgdl.src = data.filepath[0];
+        //alert(imgdl.src);
         newsrcc = data.filepath[0];
 
         ff.style.display = "block";
@@ -585,9 +592,11 @@ cityf.addEventListener("submit", function(event){
 
         optidval = "";
 
+        
+
 
     })
-    .catch(error => alert("An error occured " + (error.message || "An error occured")));
+    .catch(error => alert("Invalid input " + (error.message || "An error occured")));
         
         
 
@@ -649,7 +658,7 @@ const cookieclnr = async function(){
 
         imgg.style.display = "block";
         if(imgg.nextElementSibling.tagName === "BR"){
-        imgmap.removeChild(imgg.nextElementSibling);
+        imgmapbuttonset.removeChild(imgg.nextElementSibling);
         }
         //
         //no need to use spans for informing
@@ -659,41 +668,6 @@ const cookieclnr = async function(){
         brs.forEach(el => el.remove());
         return;
 };
-
-
-
-async function moveit(dirct){
-
-    if(pos===999999){
-        cookieclnr();
-    }
-    
-    
-    //////////////nextprev  algporithme ovVR
-
-    if (dirct && dirct==="left"){
-        pos = pos===0 ? list.length-1 : pos-1;
-        
-    }
-    else if (dirct && dirct==="right"){
-        pos = pos===list.length-1 ? 0 : pos+1;
-    }
-
-    /////////
-    /////////
-
-    let text = list[pos];
-
-    fetch(`/img?q=${text}&timestamp=${Date.now()}`)
-    .then(response => response.json())
-    .then(data => {
-        let newSrc = data.data + "?timestamp=" + Date.now();
-        imgl.innerHTML = "";
-        imgl.src = "";
-        imgl.src = newSrc;
-
-    });// data => data.json doesnt work
-}
 
 
 async function cookiedel(old){
@@ -708,7 +682,49 @@ async function cookiedel(old){
 }
 
 
+
+let isitsel = false;
+
+async function moveit(dirct){
+
+
+    if(pos===999999){
+        cookieclnr();
+    }
+    
+    
+    //////////////nextprev  algporithme ovVR
+
+    if (dirct && dirct==="left"){
+        pos = pos===0 ? list.length-1 : pos-1;
+    }
+    else if (dirct && dirct==="right"){
+        pos = pos===list.length-1 ? 0 : pos+1;
+    }
+
+    //alert(list);
+    //alert(pos);
+
+    let text = list[pos];
+
+    fetch(`/img?q=${text}&isitsel=${isitsel}&timestamp=${Date.now()}`)
+    .then(response => response.json())
+    .then(data => {
+        let newSrc = data.data + "?timestamp=" + Date.now();
+        imgdl.innerHTML = "";
+        imgdl.src = "";
+        imgdl.src = newSrc;
+
+    });// data => data.json doesnt work
+    //alert(isitsel);
+}
+
+
+
 let selcity = async function(img) {
+
+
+    isitsel = false;
         
     let u = [];
     let docl = document.cookie ? document.cookie.split("; ") : [];
@@ -716,17 +732,18 @@ let selcity = async function(img) {
     if (pos === 999999) {
         return;
     }
-    //alert(docl.length);
 
     if (docl.length === 0) {
         u = ["pos1", "first"];
+        isitsel = true;
+
     } else if (docl.length === 1) {
         u = ["pos2", "second"];
 
         const brc = document.createElement("br");
         imgg.style.display = "none";
         
-        imgmap.insertBefore(brc, imgg.nextElementSibling);
+        imgmapbuttonset.insertBefore(brc, imgg.nextElementSibling);
 
     }
 
@@ -744,11 +761,36 @@ let selcity = async function(img) {
     divposs.appendChild(br);
 
     //pos = -1;
+    //
+    
+    if(u[0] === "pos1"){
+        try{
+            const response = await fetch(`/img?q=${list[pos]}&isitsel=${isitsel}&timestamp=${Date.now()}`)
+            const data = await response.json();
+
+            if(!response.ok){
+                throw new Error("wtf? " + data.message);
+            }
+            
+            let newSrc = data.data + "?timestamp=" + Date.now();
+            imgdl.innerHTML = "";
+            imgdl.src = "";
+            imgdl.src = newSrc;
+
+
+
+        }
+        catch(error){
+                alert(error.message || "Unknown error");
+            }
+    }
+
+                
 
     if(u[0] !== "pos1"){
         
         try{  
-            const response = await fetch("/img", {
+            const response = await fetch(`/img?isitsel=${isitsel}`, {
                 credentials: "same-origin" //for cookies
             });
 
@@ -760,9 +802,9 @@ let selcity = async function(img) {
             //alert("Data: " + data.data);
 
             let newSrc = data.data + "?timestamp=" + Date.now();
-            imgl.innerHTML = "";
-            imgl.src = "";
-            imgl.src = newSrc;
+            imgdl.innerHTML = "";
+            imgdl.src = "";
+            imgdl.src = newSrc;
 
 
 
@@ -780,16 +822,17 @@ let selcity = async function(img) {
 
 
 
-let refrimg = function(){
+let refrimg = function(delmain=""){
     const cs = document.cookie.split("; ");
 4
 
-    fetch("/img", {method: "DELETE",})
-        .then(() => {
-        imgl.innerHTML = "";
-        imgl.src = "";
+    fetch(`/img?delmain=${delmain}`, {method: "DELETE",})
+        .then(response => response.json())
+        .then(data => {
+        imgdl.innerHTML = "";
+        imgdl.src = "";
 
-            imgl.src= newsrcc;
+            imgdl.src= data.mainfile;
             newsr = undefined;
 
             for(let i=0;i<cs.length;i++){
@@ -799,7 +842,19 @@ let refrimg = function(){
     cookieclnr();
     pos = 999999;
 };
-    
+
+
+
+let imgsetchange = function(){
+    const imgbuttonstyle = imgmapbuttonset.style.display === "block";
+
+    imgmapbuttonset.style.display = imgbuttonstyle ? "none" : "block";
+    textt2.style.display = imgbuttonstyle ? "block" : "none";
+    listbox2.style.display = imgbuttonstyle ? "block" : "none";
+
+    refrimg();
+};
+
 //cityf imgupl imgmap divposs
 
 const qlist = document.querySelectorAll("form#cityf, [button='b']");
